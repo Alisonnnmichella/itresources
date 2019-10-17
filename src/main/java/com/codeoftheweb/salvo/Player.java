@@ -41,6 +41,21 @@ public class Player {
         Map<String,Object> dto= new HashMap<>();
         dto.put("id",this.id);
         dto.put("email",this.userName);
+
         return dto;
     }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public Set<GamePlayer> getGamePlayerSet() {
+        return gamePlayerSet;
+    }
+
+    public void setGamePlayerList(Set<GamePlayer> gamePlayerSet) {
+        this.gamePlayerSet = gamePlayerSet;
+    }
+
+
 }
