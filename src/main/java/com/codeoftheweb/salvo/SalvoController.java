@@ -51,7 +51,8 @@ public class SalvoController {
         GamePlayer gamePlayer =gamePlayerRepository.findById(id).get();
         dto.put("id",gamePlayer.getGame().getId());
         dto.put("created",gamePlayer.getGame().getLocalDate());
-        dto.put("gamePlayers",gamePlayer.getGame().getGamePlayers().stream().map(gamePlayer1 -> gamePlayer1.getPlayer().getDTO()));
+
+        dto.put("gamePlayers",gamePlayer.getGame().getGamePlayers().stream().map(gamePlayer1 -> gamePlayer1.makeDTO()));
         dto.put("ships",gamePlayer.getShipSet().stream().map(ship -> ship.getDTO()).collect(Collectors.toList()));
         return dto;
     }
