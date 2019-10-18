@@ -1,13 +1,15 @@
-package com.codeoftheweb.salvo;
+package com.codeoftheweb.salvo.Controllers;
 
-import com.sun.javafx.collections.MappingChange;
+import com.codeoftheweb.salvo.Modelo.GamePlayer;
+import com.codeoftheweb.salvo.Repositories.GamePlayerRepository;
+import com.codeoftheweb.salvo.Repositories.GameRepository;
+import com.codeoftheweb.salvo.Repositories.PlayerRepository;
+import com.codeoftheweb.salvo.Repositories.ShipRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

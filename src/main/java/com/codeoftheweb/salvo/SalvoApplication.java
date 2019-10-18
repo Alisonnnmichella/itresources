@@ -1,12 +1,18 @@
 package com.codeoftheweb.salvo;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.codeoftheweb.salvo.Modelo.Game;
+import com.codeoftheweb.salvo.Modelo.GamePlayer;
+import com.codeoftheweb.salvo.Modelo.Player;
+import com.codeoftheweb.salvo.Modelo.Ship;
+import com.codeoftheweb.salvo.Repositories.GamePlayerRepository;
+import com.codeoftheweb.salvo.Repositories.GameRepository;
+import com.codeoftheweb.salvo.Repositories.PlayerRepository;
+import com.codeoftheweb.salvo.Repositories.ShipRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -42,7 +48,7 @@ public class SalvoApplication {
 
 
 	    @Bean
-	public CommandLineRunner initData(GameRepository gameRepository,PlayerRepository playerRepository,GamePlayerRepository gamePlayerRepository,  ShipRepository shipRepository) {
+	public CommandLineRunner initData(GameRepository gameRepository, PlayerRepository playerRepository, GamePlayerRepository gamePlayerRepository, ShipRepository shipRepository) {
 		return (args) -> {
 			// save a couple of customers
             locaciones1.addAll(Arrays.asList("A2","A3","A4","A5"));

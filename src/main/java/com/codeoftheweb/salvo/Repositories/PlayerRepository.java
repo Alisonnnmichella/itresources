@@ -1,6 +1,6 @@
-package com.codeoftheweb.salvo;
+package com.codeoftheweb.salvo.Repositories;
 
-import java.util.List;
+import com.codeoftheweb.salvo.Modelo.Player;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
