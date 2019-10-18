@@ -22,8 +22,19 @@ public class GamePlayer {
      public GamePlayer() {
     }
     LocalDateTime created;
+    @OneToMany(mappedBy = "gamePlayer",fetch =FetchType.EAGER )
+    Set<Salvo> salvoSet;
 
-    public GamePlayer(Game game, Player player,LocalDateTime id) {
+
+    public Set<Salvo> getSalvoSet() {
+        return salvoSet;
+    }
+
+    public void setSalvoSet(Set<Salvo> salvoSet) {
+        this.salvoSet = salvoSet;
+    }
+
+    public GamePlayer(Game game, Player player, LocalDateTime id) {
         this.game = game;
         this.player = player;
     }

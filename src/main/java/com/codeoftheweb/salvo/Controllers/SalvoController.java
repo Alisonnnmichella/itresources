@@ -1,6 +1,8 @@
 package com.codeoftheweb.salvo.Controllers;
 
 import com.codeoftheweb.salvo.Modelo.GamePlayer;
+import com.codeoftheweb.salvo.Modelo.Salvo;
+import com.codeoftheweb.salvo.Modelo.Ship;
 import com.codeoftheweb.salvo.Repositories.GamePlayerRepository;
 import com.codeoftheweb.salvo.Repositories.GameRepository;
 import com.codeoftheweb.salvo.Repositories.PlayerRepository;
@@ -10,9 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -49,26 +49,20 @@ public class SalvoController {
     }
 
 
-
-
-
-
-
-
-
-
     @RequestMapping("/game_view/{id}")
     public  Map<String, Object> getGameView(@PathVariable Long id) {
         Map<String,Object> dto=new HashMap<>();
+        List<Salvo> salvoes=new ArrayList<>();
         GamePlayer gamePlayer =gamePlayerRepository.findById(id).get();
         dto.put("id",gamePlayer.getGame().getId());
         dto.put("created",gamePlayer.getGame().getLocalDate());
-        dto.put("gamePlayers",gamePlayer.getGame().getGamePlayers().stream().map(gamePlayer1 -> gamePlayer1.makeDTO()
-        ));
+        dto.put("gamePlayers",gamePlayer.getGame().getGamePlayers().stream().map(gamePlayer1 -> gamePlayer1.makeDTO()));
         dto.put("ships",gamePlayer.getShipSet().stream().map(ship -> ship.getDTO()).collect(Collectors.toList()));
+        gamePlayer.getGame().getGamePlayers().stream().map(gamePlayer1 -> gamePlayer1.getSalvoSet()).collect(Collectors.toSet())
+                .forEach(salvos -> salvoes.addAll(salvos));
+        dto.put("salvoes",salvoes.stream().map(salvo -> salvo.getDto()).collect(Collectors.toList()));
         return dto;
     }
-
 
 
 }
