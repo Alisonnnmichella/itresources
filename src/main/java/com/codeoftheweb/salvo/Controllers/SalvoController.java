@@ -58,9 +58,11 @@ public class SalvoController {
         dto.put("created",gamePlayer.getGame().getLocalDate());
         dto.put("gamePlayers",gamePlayer.getGame().getGamePlayers().stream().map(gamePlayer1 -> gamePlayer1.makeDTO()));
         dto.put("ships",gamePlayer.getShipSet().stream().map(ship -> ship.getDTO()).collect(Collectors.toList()));
-        gamePlayer.getGame().getGamePlayers().stream().map(gamePlayer1 -> gamePlayer1.getSalvoSet()).collect(Collectors.toSet())
-                .forEach(salvos -> salvoes.addAll(salvos));
-        dto.put("salvoes",salvoes.stream().map(salvo -> salvo.getDto()).collect(Collectors.toList()));
+        //gamePlayer.getGame().getGamePlayers().stream().map(gamePlayer1 -> gamePlayer1.getSalvoSet()).collect(Collectors.toSet())
+          //      .forEach(salvos -> salvoes.addAll(salvos));
+        dto.put("salvoes",gamePlayer.getGame().getGamePlayers().stream().map(gamePlayer1 -> gamePlayer1.getSalvoSet()).flatMap(salvos ->salvos.stream())
+                .map(salvo -> salvo.getDto()).collect(Collectors.toList()));
+       //salvoes.stream().map(salvo -> salvo.getDto()).collect(Collectors.toList()));
         return dto;
     }
 
