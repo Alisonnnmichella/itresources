@@ -67,8 +67,8 @@ public class Ship {
     }
     public Map<String, Object> getDTO(){
         Map <String,Object> dto= new HashMap<>();
-        dto.put("Type",this.type);
-        dto.put("Locations",this.locations);
+        dto.put("type",this.type);
+        dto.put("locations",this.locations);
         return dto;
     }
 }

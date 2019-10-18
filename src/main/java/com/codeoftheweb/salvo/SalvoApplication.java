@@ -19,18 +19,24 @@ public class SalvoApplication {
 		SpringApplication.run(SalvoApplication.class, args);
 	}
 
-    Player jugadorAli=new Player("Ali");
-    Player jugadorLau= new Player("Lauti");
-    Game juego1= new Game(LocalDateTime.now());
-    Game juego2= new Game(LocalDateTime.now().plusHours(1));
-    GamePlayer gamePlayer1= new GamePlayer(juego1,jugadorAli,LocalDateTime.now());
-    GamePlayer gamePlayer2= new GamePlayer(juego1,jugadorLau,LocalDateTime.now());
-    GamePlayer gamePlayer3= new GamePlayer(juego2,jugadorAli,LocalDateTime.now());
-    GamePlayer gamePlayer4= new GamePlayer(juego2,jugadorLau,LocalDateTime.now());
-    List<String> locaciones= new ArrayList<>();
-    List<String> locaciones2= new ArrayList<>();
-    Ship ship1= new Ship(gamePlayer1,locaciones,"Carrier");
-    Ship ship2= new Ship(gamePlayer2,locaciones2,"Carrier");
+    private Player jugadorbauer=new Player("j.bauer@ctu.gov");
+    private Player jugadorobrian= new Player("c.obrian@ctu.gov");
+    private Player jugadorkbauer= new Player("kim_bauer@gmail.com kb");
+    private Player jugadoralmeida= new Player("t.almeida@ctu.gov");
+
+
+    private Game juego1= new Game(LocalDateTime.now());
+    private Game juego2= new Game(LocalDateTime.now().plusHours(1));
+    private GamePlayer gamePlayer1= new GamePlayer(juego1,jugadorbauer,LocalDateTime.now());
+    private GamePlayer gamePlayer2= new GamePlayer(juego1,jugadorobrian,LocalDateTime.now());
+    private GamePlayer gamePlayer3= new GamePlayer(juego2,jugadorkbauer,LocalDateTime.now());
+    private GamePlayer gamePlayer4= new GamePlayer(juego2,jugadoralmeida,LocalDateTime.now());
+    private List<String> locaciones1= new ArrayList<>();
+    private List<String> locaciones2= new ArrayList<>();
+    private Ship ship1= new Ship(gamePlayer1,locaciones1,"Carrier");
+    private Ship ship2= new Ship(gamePlayer1,locaciones2,"Carrier");
+    private Ship ship3= new Ship(gamePlayer1,locaciones2,"Carrier");
+    private Ship ship4= new Ship(gamePlayer1,locaciones2,"Carrier");
 
 
 
@@ -39,15 +45,13 @@ public class SalvoApplication {
 	public CommandLineRunner initData(GameRepository gameRepository,PlayerRepository playerRepository,GamePlayerRepository gamePlayerRepository,  ShipRepository shipRepository) {
 		return (args) -> {
 			// save a couple of customers
-            locaciones.add("A5");
-            locaciones.add("A6");
-            locaciones.add("A7");
-            locaciones2.add("H5");
-            locaciones2.add("H6");
-            locaciones2.add("H7");
+            locaciones1.addAll(Arrays.asList("A2","A3","A4","A5"));
+            locaciones2.addAll(Arrays.asList("H5","H6","H7"));
 
-			playerRepository.save(jugadorAli);
-			playerRepository.save(jugadorLau);
+			playerRepository.save(jugadorbauer);
+			playerRepository.save(jugadorobrian);
+			playerRepository.save(jugadorkbauer);
+			playerRepository.save(jugadoralmeida);
 			gameRepository.save(juego1);
 			gameRepository.save(juego2);
 			gamePlayerRepository.save(gamePlayer1);
