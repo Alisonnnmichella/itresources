@@ -20,7 +20,7 @@ public class Salvo {
     @ElementCollection
     private List<String> locations;
 
-    public Salvo(GamePlayer gamePlayer, int turnNumber, List<String> locations) {
+    public Salvo(int turnNumber,GamePlayer gamePlayer, List<String> locations) {
         this.gamePlayer = gamePlayer;
         this.turnNumber = turnNumber;
         this.locations = locations;

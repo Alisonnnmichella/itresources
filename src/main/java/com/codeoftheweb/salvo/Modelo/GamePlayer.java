@@ -1,6 +1,8 @@
 package com.codeoftheweb.salvo.Modelo;
 
+import com.codeoftheweb.salvo.Repositories.ScoreRepository;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.beans.factory.annotation.Autowired;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -11,32 +13,32 @@ public class GamePlayer {
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
     @GenericGenerator(name = "native", strategy = "native")
     private long id;
+
     @ManyToOne
     @JoinColumn(name="game_id")
     private Game game;
+
     @ManyToOne
     @JoinColumn(name="player_id")
     private Player player;
+
     @OneToMany(mappedBy = "gamePlayer",fetch =FetchType.EAGER )
      Set<Ship> shipSet;
      public GamePlayer() {
     }
-    LocalDateTime created;
     @OneToMany(mappedBy = "gamePlayer",fetch =FetchType.EAGER )
     Set<Salvo> salvoSet;
 
+    LocalDateTime created;
 
-    public Set<Salvo> getSalvoSet() {
-        return salvoSet;
+
+
+    public long getId() {
+        return id;
     }
 
-    public void setSalvoSet(Set<Salvo> salvoSet) {
-        this.salvoSet = salvoSet;
-    }
-
-    public GamePlayer(Game game, Player player, LocalDateTime id) {
-        this.game = game;
-        this.player = player;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public Game getGame() {
@@ -55,14 +57,6 @@ public class GamePlayer {
         this.player = player;
     }
 
-    public Map<String,Object> makeDTO(){
-        Map <String,Object> dto= new HashMap<>();
-        dto.put("id",getId());
-        dto.put("player",player.getDTO());
-        return dto;
-
-    }
-
     public Set<Ship> getShipSet() {
         return shipSet;
     }
@@ -71,11 +65,35 @@ public class GamePlayer {
         this.shipSet = shipSet;
     }
 
-    public long getId() {
-        return id;
+    public Set<Salvo> getSalvoSet() {
+        return salvoSet;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setSalvoSet(Set<Salvo> salvoSet) {
+        this.salvoSet = salvoSet;
     }
+
+    public LocalDateTime getCreated() {
+        return created;
+    }
+
+    public void setCreated(LocalDateTime created) {
+        this.created = created;
+    }
+
+
+    public GamePlayer(Game game, Player player, LocalDateTime localDateTime) {
+        this.game = game;
+        this.player = player;
+        this.created=localDateTime;
+    }
+
+    public Map<String,Object> makeDTO(){
+  Map <String,Object> dto= new HashMap<>();
+        dto.put("id",this.getId());
+        dto.put("player",player.getDTO());
+        return dto;
+
+    }
+
 }

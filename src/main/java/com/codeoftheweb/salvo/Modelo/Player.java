@@ -4,6 +4,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -14,8 +15,12 @@ public class Player {
     @GenericGenerator(name = "native", strategy = "native")
     private long id;
     private String userName;
+    private String email;
     @OneToMany(mappedBy = "player",fetch =FetchType.EAGER )
     private Set<GamePlayer> gamePlayerSet;
+
+    @OneToMany(mappedBy = "player",fetch =FetchType.EAGER )
+    private Set<Score>  scores;
 
 
     public Player() {
@@ -29,6 +34,10 @@ public class Player {
         return id;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public String getUserName() {
         return userName;
     }
@@ -37,24 +46,36 @@ public class Player {
         this.userName = userName;
     }
 
-    public Map<String,Object> getDTO(){
-        Map<String,Object> dto= new HashMap<>();
-        dto.put("id",this.id);
-        dto.put("email",this.userName);
-
-        return dto;
+    public String getEmail() {
+        return email;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public Set<GamePlayer> getGamePlayerSet() {
         return gamePlayerSet;
     }
 
-    public void setGamePlayerList(Set<GamePlayer> gamePlayerSet) {
+    public void setGamePlayerSet(Set<GamePlayer> gamePlayerSet) {
         this.gamePlayerSet = gamePlayerSet;
+    }
+
+    public Set<Score> getScores() {
+        return scores;
+    }
+
+    public void setScores(Set<Score> scores) {
+        this.scores = scores;
+    }
+
+    public Map<String,Object> getDTO(){
+        Map<String,Object> dto= new HashMap<>();
+        dto.put("id",this.id);
+        dto.put("email",this.userName);
+
+        return dto;
     }
 
 

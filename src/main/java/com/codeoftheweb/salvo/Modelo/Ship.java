@@ -29,6 +29,13 @@ public class Ship {
         this.type = type;
     }
 
+    public Ship(GamePlayer gamePlayer, String type,List<String> locations) {
+        this.gamePlayer = gamePlayer;
+        this.locations = locations;
+        this.type = type;
+    }
+
+
     public Ship(GamePlayer gamePlayer, String tipoDeBarco) {
         this.gamePlayer = gamePlayer;
         this.type = type;
@@ -66,7 +73,7 @@ public class Ship {
         this.type = type;
     }
     public Map<String, Object> getDTO(){
-        Map <String,Object> dto= new HashMap<>();
+        Map <String,Object> dto= new LinkedHashMap<>();
         dto.put("type",this.type);
         dto.put("locations",this.locations);
         return dto;
