@@ -130,25 +130,7 @@ public class SalvoApplication {
     List<String> ubicacion_27 = Arrays.asList("G6", "H6");
     Ship barco_27 = new Ship( gamePlayer_13,"Patrol Boat", ubicacion_27);
 
-    List<String> locationSalvo1 = Arrays.asList("B5","C5","F1");
-    List<String> locationSalvo2 = Arrays.asList("B4","B5","B6");
-    List<String> locationSalvo3 = Arrays.asList("F2","D5");
-    List<String> locationSalvo4 = Arrays.asList("E1","H3","A2");
-    List<String> locationSalvo5 = Arrays.asList("A2","A4","G6");
-    List<String> locationSalvo6 = Arrays.asList("B5", "D5", "C7");
-    List<String> locationSalvo7 = Arrays.asList("A3", "H6");
-    List<String> locationSalvo8 = Arrays.asList("C5", "C6");
-    List<String> locationSalvo9 = Arrays.asList("G6", "H6", "A4");
-    List<String> locationSalvo10 = Arrays.asList("B5", "D5", "C7");
-    List<String> locationSalvo11 = Arrays.asList("B5", "D5", "C7");
-    List<String> locationSalvo12 = Arrays.asList("B5", "D5", "C7");
-
-
-
-
-
-
-    @Autowired
+  @Autowired
     ScoreRepository scoreRepository;
 	@Bean
 	public CommandLineRunner initData(GameRepository gameRepository, PlayerRepository playerRepository, GamePlayerRepository gamePlayerRepository, ShipRepository shipRepository,SalvoRepository salvoRepository) {
@@ -218,7 +200,7 @@ public class SalvoApplication {
             shipRepository.save(barco_25);
             shipRepository.save(barco_26);
             shipRepository.save(barco_27);
-            // salvos
+            // -----------------------SALVOES
             List<String> salvo_ubicacion_1 = Arrays.asList("B5", "C5", "F1");
             Salvo salvo_1 = new Salvo(1, gamePlayer_1, salvo_ubicacion_1);
             salvoRepository.save(salvo_1);
