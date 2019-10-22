@@ -95,5 +95,9 @@ public class GamePlayer {
         return dto;
 
     }
+    public Score getScore(){
+        return getPlayer().getScore(this.game);
+    }
+
 
 }

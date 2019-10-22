@@ -3,10 +3,7 @@ package com.codeoftheweb.salvo.Modelo;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 public class Player {
@@ -77,6 +74,22 @@ public class Player {
 
         return dto;
     }
+    public Score getScore(Game game){
+        Optional<Score> score=
+        this.getScores().stream().filter(score1 -> score1.getGame().getId()==game.getId()).findFirst();
+        if(!score.isPresent())
+            return null;
+        return  score.get();
+    }
+//    a total score
+    public double totalScore(){
+    return  this.getScores().stream().mapToDouble(score -> score.getScore()).sum();
+    }
 
+//    a total number of wins
+
+    public double totalScoreValues(ScoreValue scoreValue){
+        return  this.getScores().stream().filter(score -> score.getScoreValue() ==scoreValue).count();
+    }
 
 }
