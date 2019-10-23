@@ -7,6 +7,17 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.GlobalAuthenticationConfigurerAdapter;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -20,121 +31,129 @@ public class SalvoApplication {
 		SpringApplication.run(SalvoApplication.class, args);
 	}
 
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
+
 //-------------------PLAYERS
-    private Player j_bauer = new Player("j.bauer@ctu.gov");
-    private Player obrian = new Player("c.obrian@ctu.gov");
-    private Player almeida = new Player("t.almeida@ctu.gov");
-    private Player kim_bauer = new Player("kim_bauer@gmail.com");
-//------------------DATES
-    Date date = new Date();
-    private LocalDateTime fecha_ahora = LocalDateTime.now();
-    private LocalDateTime one_hour_later = LocalDateTime.now().plusHours(1);
-    private LocalDateTime two_hour_later = LocalDateTime.now().plusHours(2);
-    private LocalDateTime three_hour_later  = LocalDateTime.now().plusHours(3);
-    private LocalDateTime four_hour_later =  LocalDateTime.now().plusHours(4);
-    private LocalDateTime five_hour_later  = LocalDateTime.now().plusHours(5);
-//-------------------JUEGOS
-    private Game juego_1= new Game(fecha_ahora);
-    private Game juego_2= new Game(one_hour_later);
-    private Game juego_3= new Game(two_hour_later);
-    private Game juego_4= new Game(three_hour_later);
-    private Game juego_5= new Game(four_hour_later);
-    private Game juego_6= new Game(five_hour_later);
-    private Game juego_8= new Game(five_hour_later);
-    //-------------------GAME_PLAYER
-    GamePlayer gamePlayer_1 = new GamePlayer(juego_1, j_bauer, fecha_ahora);
-    GamePlayer gamePlayer_2 = new GamePlayer(juego_1, obrian, fecha_ahora);
-    LocalDateTime scoreTiempo1= LocalDateTime.now().plusMinutes(10);
-    LocalDateTime scoreTiempo2= LocalDateTime.now().plusHours(1).plusMinutes(10);
-    LocalDateTime scoreTiempo3= LocalDateTime.now().plusHours(2).plusMinutes(10);
-    LocalDateTime scoreTiempo4= LocalDateTime.now().plusHours(3).plusMinutes(10);
+//String userName, String email, String password
 
-    Score score1= new Score(juego_1,j_bauer,scoreTiempo1,ScoreValue.WIN);
-    Score score2= new Score(juego_1,obrian,scoreTiempo1,ScoreValue.LOST);
-
-    Score score3= new Score(juego_2,j_bauer,scoreTiempo2,ScoreValue.TIED);
-    Score score4= new Score(juego_2,obrian,scoreTiempo2,ScoreValue.TIED);
-
-    Score score5= new Score(juego_3,obrian,scoreTiempo3,ScoreValue.WIN);
-    Score score6= new Score(juego_3,almeida,scoreTiempo3,ScoreValue.LOST);
-
-    Score score7= new Score(juego_4,obrian,scoreTiempo3,ScoreValue.TIED);
-    Score score8= new Score(juego_4,j_bauer,scoreTiempo3,ScoreValue.TIED);
-
-
-    GamePlayer gamePlayer_3 = new GamePlayer(juego_2, j_bauer, one_hour_later);
-    GamePlayer gamePlayer_4 = new GamePlayer(juego_2, obrian, one_hour_later);
-    GamePlayer gamePlayer_5 = new GamePlayer(juego_3, obrian, two_hour_later);
-    GamePlayer gamePlayer_6 = new GamePlayer(juego_3, almeida, two_hour_later);
-    GamePlayer gamePlayer_7 = new GamePlayer(juego_4, obrian, three_hour_later);
-    GamePlayer gamePlayer_8 = new GamePlayer(juego_4, j_bauer, three_hour_later);
-    GamePlayer gamePlayer_9 = new GamePlayer(juego_5, almeida, four_hour_later);
-    GamePlayer gamePlayer_10 = new GamePlayer(juego_5, j_bauer, four_hour_later);
-    GamePlayer gamePlayer_11 = new GamePlayer(juego_6, kim_bauer, five_hour_later);
-    GamePlayer gamePlayer_12 = new GamePlayer(juego_8, kim_bauer, five_hour_later);
-    GamePlayer gamePlayer_13 = new GamePlayer(juego_8, almeida, five_hour_later);
-
-    //--------------------SHIPS
-    List<String> ubicacion_1 = Arrays.asList("H2", "H3", "H4");
-    Ship barco_1 = new Ship(gamePlayer_1, ubicacion_1,"Destroyer");
-    List<String> ubicacion_2 = Arrays.asList("E1", "F1", "G1");
-    Ship barco_2 = new Ship(gamePlayer_1,ubicacion_2,"Submarine" );
-    List<String> ubicacion_3 = Arrays.asList("B4", "B5");
-    Ship barco_3 = new Ship(gamePlayer_1,ubicacion_3,"Patrol Boat");
-    List<String> ubicacion_4 = Arrays.asList("B5", "C5", "D5");
-    Ship barco_4 = new Ship(gamePlayer_2, ubicacion_4,"Destroyer");
-    List<String> ubicacion_5 = Arrays.asList("F1", "F2");
-    Ship barco_5 = new Ship(gamePlayer_2, ubicacion_5,"Patrol Boat");
-    List<String> ubicacion_6 = Arrays.asList("B5", "C5", "D5");
-    Ship barco_6 = new Ship(gamePlayer_3,ubicacion_6,"Destroyer");
-    List<String> ubicacion_7 = Arrays.asList("C6", "C7");
-    Ship barco_7 = new Ship(gamePlayer_3, ubicacion_7,"Patrol Boat");
-    List<String> ubicacion_8 = Arrays.asList("A2", "A3", "A4");
-    Ship barco_8 = new Ship(gamePlayer_4,ubicacion_8,"Submarine");
-    List<String> ubicacion_9 = Arrays.asList("G6", "H6");
-    Ship barco_9 = new Ship( gamePlayer_4, ubicacion_9,"Patrol Boat");
-    List<String> ubicacion_10 = Arrays.asList("B5", "C5", "D5");
-    Ship barco_10 = new Ship(gamePlayer_5,"Destroyer", ubicacion_10);
-    List<String> ubicacion_11 = Arrays.asList("C6", "C7");
-    Ship barco_11 = new Ship(gamePlayer_5,"Patrol Boat", ubicacion_11);
-    List<String> ubicacion_12 = Arrays.asList("A2", "A3", "A4");
-    Ship barco_12 = new Ship(gamePlayer_6,"Submarine", ubicacion_12);
-    List<String> ubicacion_13 = Arrays.asList("G6", "H6");
-    Ship barco_13 = new Ship(gamePlayer_6,"Patrol Boat", ubicacion_13);
-    List<String> ubicacion_14 = Arrays.asList("B5", "C5", "D5");
-    Ship barco_14 = new Ship(gamePlayer_7,"Destroyer", ubicacion_14);
-    List<String> ubicacion_15 = Arrays.asList("C6", "C7");
-    Ship barco_15 = new Ship(gamePlayer_7,"Patrol Boat", ubicacion_15);
-    List<String> ubicacion_16 = Arrays.asList("A2", "A3", "A4");
-    Ship barco_16 = new Ship(gamePlayer_8,"Submarine", ubicacion_16);
-    List<String> ubicacion_17 = Arrays.asList("G6", "H6");
-    Ship barco_17 = new Ship(gamePlayer_8,"Patrol Boat", ubicacion_17);
-    List<String> ubicacion_18 = Arrays.asList("B5", "C5", "D5");
-    Ship barco_18 = new Ship(gamePlayer_9,"Destroyer", ubicacion_18);
-    List<String> ubicacion_19 = Arrays.asList("C6", "C7");
-    Ship barco_19 = new Ship(gamePlayer_9,"Patrol Boat", ubicacion_19);
-    List<String> ubicacion_20 = Arrays.asList("A2", "A3", "A4");
-    Ship barco_20 = new Ship( gamePlayer_10,"Submarine", ubicacion_20);
-    List<String> ubicacion_21 = Arrays.asList("G6", "H6");
-    Ship barco_21 = new Ship( gamePlayer_10,"Patrol Boat", ubicacion_21);
-    List<String> ubicacion_22 = Arrays.asList("B5", "C5", "D5");
-    Ship barco_22 = new Ship( gamePlayer_11,"Destroyer", ubicacion_22);
-    List<String> ubicacion_23 = Arrays.asList("C6", "C7");
-    Ship barco_23 = new Ship( gamePlayer_11,"Patrol Boat", ubicacion_23);
-    List<String> ubicacion_24 = Arrays.asList("B5", "C5", "D5");
-    Ship barco_24 = new Ship( gamePlayer_12,"Destroyer", ubicacion_24);
-    List<String> ubicacion_25 = Arrays.asList("C6", "C7");
-    Ship barco_25 = new Ship( gamePlayer_12,"Patrol Boat", ubicacion_25);
-    List<String> ubicacion_26 = Arrays.asList("A2", "A3", "A4");
-    Ship barco_26 = new Ship( gamePlayer_13,"Submarine", ubicacion_26);
-    List<String> ubicacion_27 = Arrays.asList("G6", "H6");
-    Ship barco_27 = new Ship( gamePlayer_13,"Patrol Boat", ubicacion_27);
 
   @Autowired
     ScoreRepository scoreRepository;
 	@Bean
 	public CommandLineRunner initData(GameRepository gameRepository, PlayerRepository playerRepository, GamePlayerRepository gamePlayerRepository, ShipRepository shipRepository,SalvoRepository salvoRepository) {
 		return (args) -> {
+
+             Player j_bauer = new Player("j.bauer@ctu.gov",passwordEncoder().encode("24"));
+             Player obrian = new Player("c.obrian@ctu.gov",passwordEncoder().encode("42"));
+             Player almeida = new Player("t.almeida@ctu.gov",passwordEncoder().encode("kb"));
+             Player kim_bauer = new Player("kim_bauer@gmail.com",passwordEncoder().encode("mole"));
+//------------------DATES
+            Date date = new Date();
+             LocalDateTime fecha_ahora = LocalDateTime.now();
+             LocalDateTime one_hour_later = LocalDateTime.now().plusHours(1);
+             LocalDateTime two_hour_later = LocalDateTime.now().plusHours(2);
+             LocalDateTime three_hour_later  = LocalDateTime.now().plusHours(3);
+             LocalDateTime four_hour_later =  LocalDateTime.now().plusHours(4);
+             LocalDateTime five_hour_later  = LocalDateTime.now().plusHours(5);
+//-------------------JUEGOS
+             Game juego_1= new Game(fecha_ahora);
+             Game juego_2= new Game(one_hour_later);
+             Game juego_3= new Game(two_hour_later);
+             Game juego_4= new Game(three_hour_later);
+             Game juego_5= new Game(four_hour_later);
+             Game juego_6= new Game(five_hour_later);
+             Game juego_8= new Game(five_hour_later);
+            //-------------------GAME_PLAYER
+            GamePlayer gamePlayer_1 = new GamePlayer(juego_1, j_bauer, fecha_ahora);
+            GamePlayer gamePlayer_2 = new GamePlayer(juego_1, obrian, fecha_ahora);
+            LocalDateTime scoreTiempo1= LocalDateTime.now().plusMinutes(10);
+            LocalDateTime scoreTiempo2= LocalDateTime.now().plusHours(1).plusMinutes(10);
+            LocalDateTime scoreTiempo3= LocalDateTime.now().plusHours(2).plusMinutes(10);
+            LocalDateTime scoreTiempo4= LocalDateTime.now().plusHours(3).plusMinutes(10);
+
+            Score score1= new Score(juego_1,j_bauer,scoreTiempo1,ScoreValue.WIN);
+            Score score2= new Score(juego_1,obrian,scoreTiempo1,ScoreValue.LOST);
+
+            Score score3= new Score(juego_2,j_bauer,scoreTiempo2,ScoreValue.TIED);
+            Score score4= new Score(juego_2,obrian,scoreTiempo2,ScoreValue.TIED);
+
+            Score score5= new Score(juego_3,obrian,scoreTiempo3,ScoreValue.WIN);
+            Score score6= new Score(juego_3,almeida,scoreTiempo3,ScoreValue.LOST);
+
+            Score score7= new Score(juego_4,obrian,scoreTiempo3,ScoreValue.TIED);
+            Score score8= new Score(juego_4,j_bauer,scoreTiempo3,ScoreValue.TIED);
+
+
+            GamePlayer gamePlayer_3 = new GamePlayer(juego_2, j_bauer, one_hour_later);
+            GamePlayer gamePlayer_4 = new GamePlayer(juego_2, obrian, one_hour_later);
+            GamePlayer gamePlayer_5 = new GamePlayer(juego_3, obrian, two_hour_later);
+            GamePlayer gamePlayer_6 = new GamePlayer(juego_3, almeida, two_hour_later);
+            GamePlayer gamePlayer_7 = new GamePlayer(juego_4, obrian, three_hour_later);
+            GamePlayer gamePlayer_8 = new GamePlayer(juego_4, j_bauer, three_hour_later);
+            GamePlayer gamePlayer_9 = new GamePlayer(juego_5, almeida, four_hour_later);
+            GamePlayer gamePlayer_10 = new GamePlayer(juego_5, j_bauer, four_hour_later);
+            GamePlayer gamePlayer_11 = new GamePlayer(juego_6, kim_bauer, five_hour_later);
+            GamePlayer gamePlayer_12 = new GamePlayer(juego_8, kim_bauer, five_hour_later);
+            GamePlayer gamePlayer_13 = new GamePlayer(juego_8, almeida, five_hour_later);
+
+            //--------------------SHIPS
+            List<String> ubicacion_1 = Arrays.asList("H2", "H3", "H4");
+            Ship barco_1 = new Ship(gamePlayer_1, ubicacion_1,"Destroyer");
+            List<String> ubicacion_2 = Arrays.asList("E1", "F1", "G1");
+            Ship barco_2 = new Ship(gamePlayer_1,ubicacion_2,"Submarine" );
+            List<String> ubicacion_3 = Arrays.asList("B4", "B5");
+            Ship barco_3 = new Ship(gamePlayer_1,ubicacion_3,"Patrol Boat");
+            List<String> ubicacion_4 = Arrays.asList("B5", "C5", "D5");
+            Ship barco_4 = new Ship(gamePlayer_2, ubicacion_4,"Destroyer");
+            List<String> ubicacion_5 = Arrays.asList("F1", "F2");
+            Ship barco_5 = new Ship(gamePlayer_2, ubicacion_5,"Patrol Boat");
+            List<String> ubicacion_6 = Arrays.asList("B5", "C5", "D5");
+            Ship barco_6 = new Ship(gamePlayer_3,ubicacion_6,"Destroyer");
+            List<String> ubicacion_7 = Arrays.asList("C6", "C7");
+            Ship barco_7 = new Ship(gamePlayer_3, ubicacion_7,"Patrol Boat");
+            List<String> ubicacion_8 = Arrays.asList("A2", "A3", "A4");
+            Ship barco_8 = new Ship(gamePlayer_4,ubicacion_8,"Submarine");
+            List<String> ubicacion_9 = Arrays.asList("G6", "H6");
+            Ship barco_9 = new Ship( gamePlayer_4, ubicacion_9,"Patrol Boat");
+            List<String> ubicacion_10 = Arrays.asList("B5", "C5", "D5");
+            Ship barco_10 = new Ship(gamePlayer_5,"Destroyer", ubicacion_10);
+            List<String> ubicacion_11 = Arrays.asList("C6", "C7");
+            Ship barco_11 = new Ship(gamePlayer_5,"Patrol Boat", ubicacion_11);
+            List<String> ubicacion_12 = Arrays.asList("A2", "A3", "A4");
+            Ship barco_12 = new Ship(gamePlayer_6,"Submarine", ubicacion_12);
+            List<String> ubicacion_13 = Arrays.asList("G6", "H6");
+            Ship barco_13 = new Ship(gamePlayer_6,"Patrol Boat", ubicacion_13);
+            List<String> ubicacion_14 = Arrays.asList("B5", "C5", "D5");
+            Ship barco_14 = new Ship(gamePlayer_7,"Destroyer", ubicacion_14);
+            List<String> ubicacion_15 = Arrays.asList("C6", "C7");
+            Ship barco_15 = new Ship(gamePlayer_7,"Patrol Boat", ubicacion_15);
+            List<String> ubicacion_16 = Arrays.asList("A2", "A3", "A4");
+            Ship barco_16 = new Ship(gamePlayer_8,"Submarine", ubicacion_16);
+            List<String> ubicacion_17 = Arrays.asList("G6", "H6");
+            Ship barco_17 = new Ship(gamePlayer_8,"Patrol Boat", ubicacion_17);
+            List<String> ubicacion_18 = Arrays.asList("B5", "C5", "D5");
+            Ship barco_18 = new Ship(gamePlayer_9,"Destroyer", ubicacion_18);
+            List<String> ubicacion_19 = Arrays.asList("C6", "C7");
+            Ship barco_19 = new Ship(gamePlayer_9,"Patrol Boat", ubicacion_19);
+            List<String> ubicacion_20 = Arrays.asList("A2", "A3", "A4");
+            Ship barco_20 = new Ship( gamePlayer_10,"Submarine", ubicacion_20);
+            List<String> ubicacion_21 = Arrays.asList("G6", "H6");
+            Ship barco_21 = new Ship( gamePlayer_10,"Patrol Boat", ubicacion_21);
+            List<String> ubicacion_22 = Arrays.asList("B5", "C5", "D5");
+            Ship barco_22 = new Ship( gamePlayer_11,"Destroyer", ubicacion_22);
+            List<String> ubicacion_23 = Arrays.asList("C6", "C7");
+            Ship barco_23 = new Ship( gamePlayer_11,"Patrol Boat", ubicacion_23);
+            List<String> ubicacion_24 = Arrays.asList("B5", "C5", "D5");
+            Ship barco_24 = new Ship( gamePlayer_12,"Destroyer", ubicacion_24);
+            List<String> ubicacion_25 = Arrays.asList("C6", "C7");
+            Ship barco_25 = new Ship( gamePlayer_12,"Patrol Boat", ubicacion_25);
+            List<String> ubicacion_26 = Arrays.asList("A2", "A3", "A4");
+            Ship barco_26 = new Ship( gamePlayer_13,"Submarine", ubicacion_26);
+            List<String> ubicacion_27 = Arrays.asList("G6", "H6");
+            Ship barco_27 = new Ship( gamePlayer_13,"Patrol Boat", ubicacion_27);
 
 
 //-----------------GUARDO JUGADORES
@@ -299,4 +318,48 @@ public class SalvoApplication {
 
             };
 	}
+}
+
+//----------------Autentifica
+@Configuration
+class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
+
+    @Autowired
+    PlayerRepository playerRepository;
+
+    @Override
+    public void init(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(inputUserName -> {
+            Player player = playerRepository.findByUserName(inputUserName);
+            if (player != null) {
+                return new User(player.getUserName(), player.getPassword(),
+                        AuthorityUtils.createAuthorityList("USER"));
+            } else {
+                throw new UsernameNotFoundException("Unknown userName: " + inputUserName);
+            }
+        });
+    }
+}
+
+//-----------------Autoriza
+@Configuration
+@EnableWebSecurity
+class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests()
+                .antMatchers("/web/**").permitAll()
+                .antMatchers("api/game_view/*").hasAnyAuthority()
+                .antMatchers("*/h2-console/**").permitAll()
+                .antMatchers("/api/games").permitAll()
+                .antMatchers("/ap/**").hasAuthority("USER")
+                .and()
+                .formLogin()
+                .usernameParameter("name")
+                .passwordParameter("pwd")
+                .loginPage("/api/login");
+        http.logout().logoutSuccessUrl("")
+        ;
+
+    }
 }

@@ -18,8 +18,8 @@ public class Player {
 
     @OneToMany(mappedBy = "player",fetch =FetchType.EAGER )
     private Set<Score>  scores;
-
-
+    private String password;
+ //-----------CONSTRUCTORES-----------------
     public Player() {
     }
 
@@ -27,6 +27,12 @@ public class Player {
         this.userName = userName;
     }
 
+    public Player(String userName, String password) {
+        this.userName = userName;
+        this.password = password;
+    }
+
+    //-----------GETTERS AND SETTERS-----------------
     public long getId() {
         return id;
     }
@@ -66,6 +72,17 @@ public class Player {
     public void setScores(Set<Score> scores) {
         this.scores = scores;
     }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+
+    //-----------FUNCIONES NECESARIAS-----------------
 
     public Map<String,Object> getDTO(){
         Map<String,Object> dto= new HashMap<>();
