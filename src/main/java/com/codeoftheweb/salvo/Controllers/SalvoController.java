@@ -68,10 +68,8 @@ public class SalvoController {
 
 
     @RequestMapping("/game_view/{id}")
+
     public  Map<String, Object> getGameView(@PathVariable Long id,Authentication authentication) {
-      //  if(isGuest(authentication)){
-        //    ResponseEntity responseEntity= new ResponseEntity(hacerMap("error","Pasa algo"),HttpStatus.UNAUTHORIZED);
-        //}
         Map<String,Object> dto=new HashMap<>();
         GamePlayer gamePlayer =gamePlayerRepository.findById(id).get();
         dto.put("id",gamePlayer.getGame().getId());
@@ -84,23 +82,23 @@ public class SalvoController {
     }
 
     @RequestMapping(path = "/players", method= RequestMethod.POST)
-    public ResponseEntity<Object> register(
+    public ResponseEntity<Map<String,Object>> register(
            @RequestParam String email, @RequestParam String password) {
 
         if (email.isEmpty() || password.isEmpty() ) {
-            return new ResponseEntity<>("Missing data", HttpStatus.FORBIDDEN);
-        }
+            return new ResponseEntity<>(hacerMap("error","Paso algo"),HttpStatus.FORBIDDEN);
+          }
 
         if (playerRepository.findByUserName(email) !=  null) {
-            return new ResponseEntity<>("Name already in use", HttpStatus.FORBIDDEN);
-
-        }
+            return new ResponseEntity<>(hacerMap("error","Name already in use"),HttpStatus.FORBIDDEN);
+           }
 
         Player player=playerRepository.save(new Player(email, passwordEncoder.encode(password)));
 //      // ResponseEntity responseEntity= new ResponseEntity(player.getDTO(),HttpStatus.CREATED);
 //        //responseEntity.getHeaders().add("url","/game_view/"+player.getId());
 //        return responseEntity;
-        return  new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(hacerMap("Todo bien","Todo bien"),HttpStatus.CREATED);
+
     }
 
     private boolean isGuest(Authentication authentication){
