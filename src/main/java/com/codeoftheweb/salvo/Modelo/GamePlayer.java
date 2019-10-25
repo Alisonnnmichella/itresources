@@ -58,6 +58,7 @@ public class GamePlayer {
     }
 
     public Set<Ship> getShipSet() {
+
         return shipSet;
     }
 

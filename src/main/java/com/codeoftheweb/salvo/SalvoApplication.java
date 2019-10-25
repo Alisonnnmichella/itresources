@@ -71,7 +71,7 @@ public class SalvoApplication {
              Game juego_5= new Game(four_hour_later);
              Game juego_6= new Game(five_hour_later);
              Game juego_8= new Game(five_hour_later);
-            //-------------------GAME_PLAYER
+//-------------------GAME_PLAYER
             GamePlayer gamePlayer_1 = new GamePlayer(juego_1, j_bauer, fecha_ahora);
             GamePlayer gamePlayer_2 = new GamePlayer(juego_1, obrian, fecha_ahora);
             LocalDateTime scoreTiempo1= LocalDateTime.now().plusMinutes(10);
@@ -353,15 +353,16 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
+                .antMatchers("/h2-console/**").permitAll()
 
                 .antMatchers("/web/**").permitAll()
                 .antMatchers("/api/game_view/*").hasAuthority("USER")
-                .antMatchers("*/h2-console/**").permitAll()
                 .antMatchers("/api/games").permitAll()
                 .antMatchers("/api/players").permitAll()
                 .antMatchers("/api/login/").permitAll()
                 .antMatchers("/api/**").hasAuthority("USER")
-                .and().formLogin();
+                .and().formLogin()
+                .and().headers().frameOptions().sameOrigin();//allow use of frame to same origin urls;
                 http.formLogin()
                 .usernameParameter("name")
                 .passwordParameter("pwd")
