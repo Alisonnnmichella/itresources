@@ -352,9 +352,9 @@ class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
 class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        //gamePlayers/{{gamePlayerId}}/damages
         http.authorizeRequests()
                 .antMatchers("/h2-console/**").permitAll()
-
                 .antMatchers("/web/**").permitAll()
                 .antMatchers("/api/game_view/*").hasAuthority("USER")
                 .antMatchers("/api/games").permitAll()

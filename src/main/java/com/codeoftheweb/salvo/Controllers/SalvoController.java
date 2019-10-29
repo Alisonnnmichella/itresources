@@ -63,7 +63,8 @@ public class SalvoController {
 
 
         Player player= playerRepository.findByUserName(authentication.getName());
-        GamePlayer gamePlayer =gamePlayerRepository.findById(id).get();
+        GamePlayer gamePlayer =gamePlayerRepository.findById(id).orElse(null);
+
         if(player==null)
             return new ResponseEntity<>(hacerMap("error","Usted no esta logueado."),HttpStatus.UNAUTHORIZED);
 
@@ -74,9 +75,9 @@ public class SalvoController {
             return new ResponseEntity<>(hacerMap("error","Problemas con el gamePlayer")
                     ,HttpStatus.UNAUTHORIZED);
 
-        Map<String,Object> hits= new HashMap<>();
-        hits.put("self",new ArrayList<>());
-        hits.put("opponent",new ArrayList<>());
+        Map<String,Object> hits= new LinkedHashMap<>();
+        hits.put("self",gamePlayer.hitsTodosLosTurnos());
+        hits.put("opponent",gamePlayer.hitsTodosLosTurnos());
         Map<String,Object> dto=new HashMap<>();
         dto.put("id",gamePlayer.getGame().getId());
         dto.put("created",gamePlayer.getGame().getLocalDateTime());
@@ -86,6 +87,7 @@ public class SalvoController {
         dto.put("salvoes",gamePlayer.getGame().getGamePlayers().stream().map(gamePlayer1 -> gamePlayer1.getSalvoSet()).flatMap(salvos ->salvos.stream())
                 .map(salvo -> salvo.getDto()).collect(Collectors.toList()));
         dto.put("hits",hits);
+
         return new ResponseEntity<>(dto
                 ,HttpStatus.OK);
     }
@@ -152,5 +154,6 @@ public class SalvoController {
          soyUnMapa.put(string, objeto);
          return soyUnMapa;
     }
+
 
 }

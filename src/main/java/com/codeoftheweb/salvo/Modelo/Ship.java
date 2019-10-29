@@ -4,6 +4,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Entity
@@ -78,4 +79,8 @@ public class Ship {
         dto.put("locations",this.locations);
         return dto;
     }
+    public List<String> getHits(List<String> locationsSalvoesEnemigos){
+         return   this.getLocations().stream().filter(location->locationsSalvoesEnemigos.stream().anyMatch(s -> s.equals(location))).collect(Collectors.toList());
+    }
+
 }
