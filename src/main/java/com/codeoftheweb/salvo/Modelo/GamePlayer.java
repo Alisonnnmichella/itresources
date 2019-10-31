@@ -23,13 +23,13 @@ public class GamePlayer {
     private Player player;
 
     @OneToMany(mappedBy = "gamePlayer", fetch = FetchType.EAGER)
-    Set<Ship> shipSet;
+    Set<Ship> shipSet=new HashSet<>();
 
     public GamePlayer() {
     }
 
     @OneToMany(mappedBy = "gamePlayer", fetch = FetchType.EAGER)
-    Set<Salvo> salvoSet;
+    Set<Salvo> salvoSet=new HashSet<>();
 
     LocalDateTime created;
 
@@ -105,7 +105,8 @@ public class GamePlayer {
     }
 
     public GamePlayer getEnemigo() {
-        return this.getGame().getGamePlayers().stream().filter(gamePlayer -> gamePlayer.getPlayer().getId() != this.getId()).findFirst().orElse(null);
+       return this.getGame().getGamePlayers().stream().filter(gamePlayer1 -> gamePlayer1.getPlayer().getId() != this.getPlayer().getId()).findFirst().orElse(new GamePlayer());
+
     }
 
     public List<String> getPosicionesBarco() {
@@ -113,9 +114,9 @@ public class GamePlayer {
     }
 
     public List<String> getPosicionesSalvoPorTurno(int turno) {
-        Optional<Salvo> salvo = this.getSalvoSet().stream().filter(salvo1 -> salvo1.getTurnNumber() == turno).findFirst();
+        Optional<Salvo> salvo = this.getSalvoSet().stream().filter(salvo1 -> salvo1.getTurn() == turno).findFirst();
         if (salvo.isPresent())
-            return salvo.get().getLocations();
+            return salvo.get().getSalvoLocations();
         return new ArrayList<>();
     }
 
@@ -123,8 +124,8 @@ public class GamePlayer {
         List<String> posiciones = new ArrayList<>();
         while (turno > 0) {
             posiciones.addAll(getPosicionesSalvoPorTurno(turno));
-            turno--;
-        }
+        turno--;
+    }
         return posiciones;
     }
 
@@ -187,6 +188,32 @@ public class GamePlayer {
     public void setSalvoSet(Set<Salvo> salvoSet) {
         this.salvoSet = salvoSet;
     }
+
+    public int contarBarcosCaidos(){
+        return  shipSet.stream().filter(ship -> ship.isSink()).collect(Collectors.toList()).size();
+    }
+
+
+    public String getEstado(){
+        if(getShipSet().isEmpty())
+            return "PLACESHIPS";
+        if(game.getGamePlayers().size()!=2)
+            return "WAITINGFOROPP";
+        if(getEnemigo().getShipSet().isEmpty())
+            return "WAIT";
+        if(getShipSet().stream().allMatch(ship -> ship.isSink()))
+            return "LOST";
+        if(getEnemigo().getShipSet().stream().allMatch(ship -> ship.isSink()))
+            return "WON";
+        if(getSalvoSet().size() <= getEnemigo().getSalvoSet().size())
+            return "PLAY";
+        if(getSalvoSet().size()> getEnemigo().getSalvoSet().size())
+            return "WAIT";
+        if(contarBarcosCaidos()==getEnemigo().contarBarcosCaidos())
+            return "TIED";
+        return "WAIT";
+    }
+
 
 
 }

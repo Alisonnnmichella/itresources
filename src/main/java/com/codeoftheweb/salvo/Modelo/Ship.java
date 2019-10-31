@@ -92,4 +92,8 @@ public class Ship {
     public void setHitsRecibidos(Set<String> hitsRecibidos) {
         this.hitsRecibidos = hitsRecibidos;
     }
+    public boolean isSink(){
+        return hitsRecibidos.size()==locations.size();
+    }
+
 }

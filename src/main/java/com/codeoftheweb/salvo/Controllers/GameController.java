@@ -4,7 +4,6 @@ import com.codeoftheweb.salvo.Modelo.*;
 import com.codeoftheweb.salvo.Repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -86,15 +85,49 @@ public class GameController {
                     , HttpStatus.UNAUTHORIZED);
 
 
-        if (gamePlayer.getSalvoSet().stream().anyMatch(salvo1 -> salvo1.getTurnNumber()==salvo.getTurnNumber()))
-        return new ResponseEntity<>(hacerMap("error", "Already has ships placed")
-                , HttpStatus.FORBIDDEN);
+        if (gamePlayer.getSalvoSet().stream().anyMatch(salvo1 -> salvo1.getTurn() == salvo.getTurn()))
+            return new ResponseEntity<>(hacerMap("error", "Already has ships placed")
+                    , HttpStatus.FORBIDDEN);
 
-        salvo.setGamePlayer(gamePlayer);
+        if(gamePlayer.getSalvoSet().isEmpty()){
+            salvo.setTurn(1);
+        }
+        GamePlayer opponent = gamePlayer.getEnemigo();
+        if (opponent != null) {
+            if (gamePlayer.getSalvoSet().size() <= opponent.getSalvoSet().size()) {
+                salvo.setTurn(gamePlayer.getSalvoSet().size() + 1);
+                salvo.setGamePlayer(gamePlayer);
+            } else {
+                return new ResponseEntity<>(hacerMap("error", "ya tienes salvos"), HttpStatus.FORBIDDEN); }
+        }
+        else {
+            return new ResponseEntity<>(hacerMap("error", "no hay oponentes"),HttpStatus.FORBIDDEN);
+        }
         salvoRepository.save(salvo);
+        return new ResponseEntity<>(hacerMap("OK", "Salvo created"),HttpStatus.CREATED);
+    }
 
-        return new ResponseEntity<>(hacerMap("OK", "Todo sigue igual de bien")
-                , HttpStatus.CREATED);
+
+
+    @GetMapping("/games/players/{gamePlayerId}/salvoes")
+    public ResponseEntity<Map<String, Object>> getSalvoes(@PathVariable long gamePlayerId, Authentication authentication) {
+
+        if (isGuest(authentication))
+            return new ResponseEntity<>(hacerMap("error", "Usted no esta logueado"), HttpStatus.UNAUTHORIZED);
+
+        Player player = playerRepository.findByUserName(authentication.getName());
+        GamePlayer gamePlayer = gamePlayerRepository.findById(gamePlayerId).get();
+
+        if (gamePlayer == null)
+            return new ResponseEntity<>(hacerMap("error", "there is no game player with the given ID")
+                    , HttpStatus.UNAUTHORIZED);
+
+        if (gamePlayer.getPlayer().getId() != player.getId())
+            return new ResponseEntity<>(hacerMap("error", "Problemas con el gamePlayer")
+                    , HttpStatus.UNAUTHORIZED);
+
+        return new ResponseEntity<>(hacerMap("OK", gamePlayer.getSalvoSet().stream().map(salvo -> salvo.getDto()).collect(Collectors.toList()))
+                , HttpStatus.OK);
 
     }
 
@@ -127,7 +160,7 @@ public class GameController {
         ships.forEach(ship -> ship.setGamePlayer(gamePlayer));
         ships.forEach(ship -> shipRepository.save(ship));
 
-        return new ResponseEntity<>(hacerMap("OK", "Todo sigue igual de bien")
+        return new ResponseEntity<>(hacerMap("OK", "Barcos posicionados")
                 , HttpStatus.CREATED);
 
     }
@@ -164,9 +197,10 @@ public class GameController {
         soyUnMapa.put(string, objeto);
         return soyUnMapa;
     }
+
     @GetMapping("gamePlayers/{gamePlayerId}/damages/{turn}")
-    public ResponseEntity<Object> getDamages(@PathVariable long gamePlayerId,@PathVariable int turn){
-        GamePlayer gamePlayer= gamePlayerRepository.getOne(gamePlayerId);
+    public ResponseEntity<Object> getDamages(@PathVariable long gamePlayerId, @PathVariable int turn) {
+        GamePlayer gamePlayer = gamePlayerRepository.getOne(gamePlayerId);
 
         return new ResponseEntity<>(gamePlayer.hitsPorTurno(turn)
                 , HttpStatus.OK);

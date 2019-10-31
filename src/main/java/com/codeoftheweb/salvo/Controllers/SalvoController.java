@@ -46,10 +46,6 @@ public class SalvoController {
 
     }
 
-
-
-
-
     @RequestMapping("/ships")
     public List<Object> ships() {
         return shipRepository.findAll().stream().map(ship -> ship.getLocations()).collect(Collectors.toList());
@@ -81,7 +77,7 @@ public class SalvoController {
         Map<String,Object> dto=new HashMap<>();
         dto.put("id",gamePlayer.getGame().getId());
         dto.put("created",gamePlayer.getGame().getLocalDateTime());
-        dto.put("gameState","PLACESHIPS");
+        dto.put("gameState",gamePlayer.getEstado());
         dto.put("gamePlayers",gamePlayer.getGame().getGamePlayers().stream().map(gamePlayer1 -> gamePlayer1.makeDTO()));
         dto.put("ships",gamePlayer.getShipSet().stream().map(ship -> ship.getDTO()).collect(Collectors.toList()));
         dto.put("salvoes",gamePlayer.getGame().getGamePlayers().stream().map(gamePlayer1 -> gamePlayer1.getSalvoSet()).flatMap(salvos ->salvos.stream())

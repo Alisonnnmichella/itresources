@@ -3,7 +3,6 @@ package com.codeoftheweb.salvo.Modelo;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,14 +16,14 @@ public class Salvo {
     @ManyToOne
     @JoinColumn(name="gamePlayerId")
     private GamePlayer gamePlayer;
-    private int turnNumber;
+    private int turn;
     @ElementCollection
-    private List<String> locations;
+    private List<String> salvoLocations;
 
     public Salvo(int turnNumber,GamePlayer gamePlayer, List<String> locations) {
         this.gamePlayer = gamePlayer;
-        this.turnNumber = turnNumber;
-        this.locations = locations;
+        this.turn = turnNumber;
+        this.salvoLocations = locations;
     }
 
     public Salvo() {
@@ -46,27 +45,27 @@ public class Salvo {
         this.gamePlayer = gamePlayer;
     }
 
-    public int getTurnNumber() {
-        return turnNumber;
+    public int getTurn() {
+        return turn;
     }
 
-    public void setTurnNumber(int turnNumber) {
-        this.turnNumber = turnNumber;
+    public void setTurn(int turn) {
+        this.turn = turn;
     }
 
-    public List<String> getLocations() {
-        return locations;
+    public List<String> getSalvoLocations() {
+        return salvoLocations;
     }
 
-    public void setLocations(List<String> locations) {
-        this.locations = locations;
+    public void setSalvoLocations(List<String> salvoLocations) {
+        this.salvoLocations = salvoLocations;
     }
 
     public Map<String,Object> getDto(){
         Map<String,Object> dto= new HashMap<>();
-        dto.put("turn",this.turnNumber);
+        dto.put("turn",this.turn);
         dto.put("player",this.gamePlayer.getPlayer().getId());
-        dto.put("locations",this.locations);
+        dto.put("locations",this.salvoLocations);
         return dto;
     }
 }
