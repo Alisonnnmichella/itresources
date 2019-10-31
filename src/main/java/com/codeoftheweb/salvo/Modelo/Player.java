@@ -19,6 +19,7 @@ public class Player {
     @OneToMany(mappedBy = "player",fetch =FetchType.EAGER )
     private Set<Score>  scores;
     private String password;
+
  //-----------CONSTRUCTORES-----------------
     public Player() {
     }

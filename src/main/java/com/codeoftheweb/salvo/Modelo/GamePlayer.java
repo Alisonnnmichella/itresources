@@ -37,6 +37,8 @@ public class GamePlayer {
     LocalDateTime created;
 
 
+
+
     public long getId() {
         return id;
     }
@@ -152,6 +154,7 @@ public class GamePlayer {
 
     }
 
+
     public Map<String, Object> damages(int turno) {
         HashMap<String, Object> dto = new LinkedHashMap<>();
         List<String> hits = getHits(getEnemigo().getPosicionesSalvoPorTurno(turno));
@@ -159,34 +162,36 @@ public class GamePlayer {
         getShipSet().forEach(ship -> dto.put(ship.getType() + "Hits", ship.getHits(hits).size()));
         getShipSet().forEach(ship -> dto.put(ship.getType(), ship.getHits(hitsAcumulativos).size()));
         return dto;
-      }
+    }
 
     public Map<String, Object> hitsPorTurno(int turno) {
         HashMap<String, Object> dto = new LinkedHashMap<>();
         List<String> hits = getHits(getEnemigo().getPosicionesSalvoPorTurno(turno));
-        dto.put("turn",turno);
-        dto.put("hitsLocations",hits);
-        dto.put("damages",this.damages(turno));
-        dto.put("missed",5-hits.size());
+        dto.put("turn", turno);
+        dto.put("hitLocations", hits);
+        dto.put("damages", this.damages(turno));
+        dto.put("missed", 5 - hits.size());
         return dto;
     }
-    public int mayorTurno(){
-       OptionalInt mayorTurno= salvoSet.stream().mapToInt(salvo->salvo.getTurnNumber()).max();
-            if(mayorTurno.isPresent())
-                return mayorTurno.getAsInt();
-       return 0;
-    }
 
-    public List<Map<String,Object>> hitsTodosLosTurnos(){
-        ArrayList<Map<String,Object>> hitsTotales= new ArrayList<>();
-        int i=1;
-        while (i<=this.mayorTurno()) {
+
+
+    public List<Map<String, Object>> hitsTodosLosTurnos() {
+        ArrayList<Map<String, Object>> hitsTotales = new ArrayList<>();
+        int i = 1;
+        while (i <= salvoSet.size()) {
             hitsTotales.add(hitsPorTurno(i));
             i++;
         }
         return hitsTotales;
-        }
     }
+
+
+    public void setSalvoSet(Set<Salvo> salvoSet) {
+        this.salvoSet = salvoSet;
+    }
+
+}
 
 
 

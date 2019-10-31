@@ -77,7 +77,7 @@ public class SalvoController {
 
         Map<String,Object> hits= new LinkedHashMap<>();
         hits.put("self",gamePlayer.hitsTodosLosTurnos());
-        hits.put("opponent",gamePlayer.hitsTodosLosTurnos());
+        hits.put("opponent",gamePlayer.getEnemigo().hitsTodosLosTurnos());
         Map<String,Object> dto=new HashMap<>();
         dto.put("id",gamePlayer.getGame().getId());
         dto.put("created",gamePlayer.getGame().getLocalDateTime());
@@ -91,6 +91,10 @@ public class SalvoController {
         return new ResponseEntity<>(dto
                 ,HttpStatus.OK);
     }
+
+
+
+
 
     @RequestMapping(path = "/players", method= RequestMethod.POST)
     public ResponseEntity<Map<String,Object>> register(
@@ -154,6 +158,7 @@ public class SalvoController {
          soyUnMapa.put(string, objeto);
          return soyUnMapa;
     }
+
 
 
 }

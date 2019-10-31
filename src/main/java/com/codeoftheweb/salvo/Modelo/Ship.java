@@ -20,6 +20,8 @@ public class Ship {
     @Column(name="shipLocation")
     private List<String> locations = new ArrayList<>();
     private String type;
+    @Transient
+    private ShipState shipState;
 
     public Ship() {
     }
@@ -41,6 +43,7 @@ public class Ship {
         this.gamePlayer = gamePlayer;
         this.type = type;
     }
+
 
     public long getId() {
         return id;
@@ -82,5 +85,18 @@ public class Ship {
     public List<String> getHits(List<String> locationsSalvoesEnemigos){
          return   this.getLocations().stream().filter(location->locationsSalvoesEnemigos.stream().anyMatch(s -> s.equals(location))).collect(Collectors.toList());
     }
+    public void sink(List<String> locationsSalvoesEnemigos){
+       if( getHits(locationsSalvoesEnemigos).size() <= this.locations.size())
+               setShipState(ShipState.NORMAL);
+       setShipState(ShipState.SINK);
 
+    }
+
+    public ShipState getShipState() {
+        return shipState;
+    }
+
+    public void setShipState(ShipState shipState) {
+        this.shipState = shipState;
+    }
 }
