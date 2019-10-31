@@ -20,8 +20,9 @@ public class Ship {
     @Column(name="shipLocation")
     private List<String> locations = new ArrayList<>();
     private String type;
+
     @Transient
-    private ShipState shipState;
+    private Set<String> hitsRecibidos=hitsRecibidos= new HashSet<>();
 
     public Ship() {
     }
@@ -37,13 +38,6 @@ public class Ship {
         this.locations = locations;
         this.type = type;
     }
-
-
-    public Ship(GamePlayer gamePlayer, String tipoDeBarco) {
-        this.gamePlayer = gamePlayer;
-        this.type = type;
-    }
-
 
     public long getId() {
         return id;
@@ -82,21 +76,20 @@ public class Ship {
         dto.put("locations",this.locations);
         return dto;
     }
-    public List<String> getHits(List<String> locationsSalvoesEnemigos){
-         return   this.getLocations().stream().filter(location->locationsSalvoesEnemigos.stream().anyMatch(s -> s.equals(location))).collect(Collectors.toList());
-    }
-    public void sink(List<String> locationsSalvoesEnemigos){
-       if( getHits(locationsSalvoesEnemigos).size() <= this.locations.size())
-               setShipState(ShipState.NORMAL);
-       setShipState(ShipState.SINK);
 
-    }
-
-    public ShipState getShipState() {
-        return shipState;
+    public List<String> getHits(List<String> locationsSalvoesEnemigosPorTurno){
+        List<String> locations= this.getLocations().stream()
+                .filter(location->locationsSalvoesEnemigosPorTurno.stream()
+                        .anyMatch(s -> s.equals(location))).collect(Collectors.toList());
+        hitsRecibidos.addAll(locations);
+        return locations;
     }
 
-    public void setShipState(ShipState shipState) {
-        this.shipState = shipState;
+    public Set<String> getHitsRecibidos() {
+        return hitsRecibidos;
+    }
+
+    public void setHitsRecibidos(Set<String> hitsRecibidos) {
+        this.hitsRecibidos = hitsRecibidos;
     }
 }

@@ -306,11 +306,6 @@ public class SalvoApplication {
             Salvo salvo_20 = new Salvo(2, gamePlayer_10, salvo_ubicacion_20);
             salvoRepository.save(salvo_20);
 
-//            List<String> salvo_ubicacion_21 = Arrays.asList("H1", "H8");
-//            Salvo salvo_21 = new Salvo(3, gamePlayer_10, salvo_ubicacion_21);
-//            salvoRepository.save(salvo_21);
-
-
             scoreRepository.save(score1);
             scoreRepository.save(score2);
             scoreRepository.save(score3);

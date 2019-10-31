@@ -1,13 +1,10 @@
 package com.codeoftheweb.salvo.Modelo;
 
-import com.codeoftheweb.salvo.Repositories.ScoreRepository;
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Entity
@@ -149,18 +146,18 @@ public class GamePlayer {
         dto.put("turn", turno);
         dto.put("hitLocations", hits);
         getShipSet().forEach(ship -> dto.put(ship.getType() + "Hits", ship.getHits(hits).size()));
-        getShipSet().forEach(ship -> dto.put(ship.getType(), ship.getHits(hitsAcumulativos).size()));
+        getShipSet().forEach(ship -> dto.put(ship.getType(), ship.getHitsRecibidos()));
         return dto;
 
     }
 
 
-    public Map<String, Object> damages(int turno) {
+    public Map<String, Object> getDamages(int turno) {
         HashMap<String, Object> dto = new LinkedHashMap<>();
         List<String> hits = getHits(getEnemigo().getPosicionesSalvoPorTurno(turno));
-        List<String> hitsAcumulativos = getHits(getEnemigo().getPosicionesSalvoHastaNTurno(turno));
+
         getShipSet().forEach(ship -> dto.put(ship.getType() + "Hits", ship.getHits(hits).size()));
-        getShipSet().forEach(ship -> dto.put(ship.getType(), ship.getHits(hitsAcumulativos).size()));
+        getShipSet().forEach(ship -> dto.put(ship.getType(), ship.getHitsRecibidos().size()));
         return dto;
     }
 
@@ -169,7 +166,7 @@ public class GamePlayer {
         List<String> hits = getHits(getEnemigo().getPosicionesSalvoPorTurno(turno));
         dto.put("turn", turno);
         dto.put("hitLocations", hits);
-        dto.put("damages", this.damages(turno));
+        dto.put("damages", this.getDamages(turno));
         dto.put("missed", 5 - hits.size());
         return dto;
     }
@@ -190,6 +187,7 @@ public class GamePlayer {
     public void setSalvoSet(Set<Salvo> salvoSet) {
         this.salvoSet = salvoSet;
     }
+
 
 }
 
