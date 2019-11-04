@@ -183,7 +183,8 @@ public class GameController {
             return new ResponseEntity<>(hacerMap("error", "Problemas con el gamePlayer")
                     , HttpStatus.UNAUTHORIZED);
 
-        return new ResponseEntity<>(hacerMap("OK", gamePlayer.getShipSet().stream().map(ship -> ship.getDTO()).collect(Collectors.toList()))
+        return new ResponseEntity<>(hacerMap("OK", gamePlayer.getShipSet().stream()
+                .map(ship -> ship.getDTO()).collect(Collectors.toList()))
                 , HttpStatus.OK);
 
     }

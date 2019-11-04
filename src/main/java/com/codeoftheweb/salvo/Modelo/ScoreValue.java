@@ -1,7 +1,7 @@
 package com.codeoftheweb.salvo.Modelo;
 
 public enum ScoreValue {
-    WIN(1.0),LOST(0.0),TIED(0.5);
+    WON(1.0),LOST(0.0), TIE(0.5);
 
     private double score;
 

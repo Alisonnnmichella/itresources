@@ -22,7 +22,7 @@ public class Ship {
     private String type;
 
     @Transient
-    private Set<String> hitsRecibidos=hitsRecibidos= new HashSet<>();
+    private Set<String> hitsRecibidos= new HashSet<>();
 
     public Ship() {
     }
@@ -92,6 +92,7 @@ public class Ship {
     public void setHitsRecibidos(Set<String> hitsRecibidos) {
         this.hitsRecibidos = hitsRecibidos;
     }
+
     public boolean isSink(){
         return hitsRecibidos.size()==locations.size();
     }

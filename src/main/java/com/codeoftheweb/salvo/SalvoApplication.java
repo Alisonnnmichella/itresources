@@ -79,17 +79,17 @@ public class SalvoApplication {
             LocalDateTime scoreTiempo3= LocalDateTime.now().plusHours(2).plusMinutes(10);
             LocalDateTime scoreTiempo4= LocalDateTime.now().plusHours(3).plusMinutes(10);
 
-            Score score1= new Score(juego_1,j_bauer,scoreTiempo1,ScoreValue.WIN);
+            Score score1= new Score(juego_1,j_bauer,scoreTiempo1,ScoreValue.WON);
             Score score2= new Score(juego_1,obrian,scoreTiempo1,ScoreValue.LOST);
 
-            Score score3= new Score(juego_2,j_bauer,scoreTiempo2,ScoreValue.TIED);
-            Score score4= new Score(juego_2,obrian,scoreTiempo2,ScoreValue.TIED);
+            Score score3= new Score(juego_2,j_bauer,scoreTiempo2,ScoreValue.TIE);
+            Score score4= new Score(juego_2,obrian,scoreTiempo2,ScoreValue.TIE);
 
-            Score score5= new Score(juego_3,obrian,scoreTiempo3,ScoreValue.WIN);
+            Score score5= new Score(juego_3,obrian,scoreTiempo3,ScoreValue.WON);
             Score score6= new Score(juego_3,almeida,scoreTiempo3,ScoreValue.LOST);
 
-            Score score7= new Score(juego_4,obrian,scoreTiempo3,ScoreValue.TIED);
-            Score score8= new Score(juego_4,j_bauer,scoreTiempo3,ScoreValue.TIED);
+            Score score7= new Score(juego_4,obrian,scoreTiempo3,ScoreValue.TIE);
+            Score score8= new Score(juego_4,j_bauer,scoreTiempo3,ScoreValue.TIE);
 
 
             GamePlayer gamePlayer_3 = new GamePlayer(juego_2, j_bauer, one_hour_later);

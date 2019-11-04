@@ -201,6 +201,8 @@ public class GamePlayer {
             return "WAITINGFOROPP";
         if(getEnemigo().getShipSet().isEmpty())
             return "WAIT";
+        if(contarBarcosCaidos()==getEnemigo().contarBarcosCaidos()&& contarBarcosCaidos()==shipSet.size())
+            return "TIE";
         if(getShipSet().stream().allMatch(ship -> ship.isSink()))
             return "LOST";
         if(getEnemigo().getShipSet().stream().allMatch(ship -> ship.isSink()))
@@ -209,10 +211,11 @@ public class GamePlayer {
             return "PLAY";
         if(getSalvoSet().size()> getEnemigo().getSalvoSet().size())
             return "WAIT";
-        if(contarBarcosCaidos()==getEnemigo().contarBarcosCaidos())
-            return "TIED";
         return "WAIT";
     }
+
+
+
 
 
 
