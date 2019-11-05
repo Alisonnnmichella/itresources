@@ -48,7 +48,8 @@ public class SalvoApplication {
   @Autowired
     ScoreRepository scoreRepository;
 	@Bean
-	public CommandLineRunner initData(GameRepository gameRepository, PlayerRepository playerRepository, GamePlayerRepository gamePlayerRepository, ShipRepository shipRepository,SalvoRepository salvoRepository) {
+	public CommandLineRunner initData(GameRepository gameRepository, PlayerRepository playerRepository, GamePlayerRepository gamePlayerRepository,
+                                      ShipRepository shipRepository,SalvoRepository salvoRepository) {
 		return (args) -> {
 
              Player j_bauer = new Player("j.bauer@ctu.gov",passwordEncoder().encode("24"));

@@ -23,6 +23,7 @@ public class Salvo {
     public Salvo(int turnNumber,GamePlayer gamePlayer, List<String> locations) {
         this.gamePlayer = gamePlayer;
         this.turn = turnNumber;
+
         this.salvoLocations = locations;
     }
 
