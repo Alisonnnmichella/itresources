@@ -23,17 +23,15 @@ public class GamePlayer {
     private Player player;
 
     @OneToMany(mappedBy = "gamePlayer", fetch = FetchType.EAGER)
-    Set<Ship> shipSet=new HashSet<>();
+    Set<Ship> shipSet = new HashSet<>();
 
     public GamePlayer() {
     }
 
     @OneToMany(mappedBy = "gamePlayer", fetch = FetchType.EAGER)
-    Set<Salvo> salvoSet=new HashSet<>();
+    Set<Salvo> salvoSet = new HashSet<>();
 
     LocalDateTime created;
-
-
 
 
     public long getId() {
@@ -92,7 +90,7 @@ public class GamePlayer {
         this.created = localDateTime;
     }
 
-    public Map<String, Object> makeDTO() {
+    public Map<String, Object> idplayerdto() {
         Map<String, Object> dto = new HashMap<>();
         dto.put("id", this.getId());
         dto.put("player", player.getDTO());
@@ -104,82 +102,55 @@ public class GamePlayer {
         return getPlayer().getScore(this.game);
     }
 
-    public GamePlayer getEnemigo() {
-       return this.getGame().getGamePlayers().stream().filter(gamePlayer1 -> gamePlayer1.getPlayer().getId() != this.getPlayer().getId()).findFirst().orElse(new GamePlayer());
-
+    public GamePlayer getOpponent() {
+        return this.getGame().getGamePlayers()
+                .stream()
+                .filter(gamePlayer1 -> gamePlayer1.getPlayer().getId() != this.getPlayer().getId())
+                .findFirst()
+                .orElse(new GamePlayer());
     }
 
-    public List<String> getPosicionesBarco() {
-        return this.getShipSet().stream().map(ship -> ship.getLocations()).flatMap(strings -> strings.stream()).collect(Collectors.toList());
+
+    public List<String> getLocationsShips() {
+        return this.getShipSet().stream().map(ship -> ship.getLocations())
+                .flatMap(strings -> strings.stream())
+                .collect(Collectors.toList());
     }
 
-    public List<String> getPosicionesSalvoPorTurno(int turno) {
-        Optional<Salvo> salvo = this.getSalvoSet().stream().filter(salvo1 -> salvo1.getTurn() == turno).findFirst();
-        if (salvo.isPresent())
-            return salvo.get().getSalvoLocations();
-        return new ArrayList<>();
+
+    public List<String> getHits(int turno) {
+        Optional<Salvo> salvo = getOpponent().getSalvoSet().stream()
+                .filter(salvo1 -> salvo1.getTurn() == turno).findFirst();
+        if (!salvo.isPresent())
+            return new ArrayList<>();
+        List<String> locationsSalvo = salvo.get().getSalvoLocations();
+
+        return this.getLocationsShips().stream()
+                .filter(posicion -> locationsSalvo.stream()
+                        .anyMatch(salvoEnemigo1 -> salvoEnemigo1.equals(posicion)))
+                .collect(Collectors.toList());
     }
-
-    public List<String> getPosicionesSalvoHastaNTurno(int turno) {
-        List<String> posiciones = new ArrayList<>();
-        while (turno > 0) {
-            posiciones.addAll(getPosicionesSalvoPorTurno(turno));
-        turno--;
-    }
-        return posiciones;
-    }
-
-    public List<String> getHits(List<String> posicionesSalvoEnemigo) {
-        return this.getPosicionesBarco().stream().filter(posicion -> posicionesSalvoEnemigo.stream().anyMatch(salvoEnemigo1 -> salvoEnemigo1.equals(posicion))).collect(Collectors.toList());
-    }
-
-    public Map<String, Object> prueba(int turno) {
-
-        HashMap<String, Object> dto = new LinkedHashMap<>();
-        dto.put("enemigo", getEnemigo().getId());
-        dto.put("ships", this.getPosicionesBarco());
-        dto.put("info ships", this.getShipSet().stream().map(ship -> ship.getDTO()).collect(Collectors.toList()));
-        dto.put("salvoes", this.getEnemigo().getPosicionesSalvoPorTurno(turno));
-        List<String> hits = getHits(getEnemigo().getPosicionesSalvoPorTurno(turno));
-        List<String> hitsAcumulativos = getHits(getEnemigo().getPosicionesSalvoHastaNTurno(turno));
-
-        dto.put("hitsAcumulativo", hitsAcumulativos);
-        dto.put("turn", turno);
-        dto.put("hitLocations", hits);
-        getShipSet().forEach(ship -> dto.put(ship.getType() + "Hits", ship.getHits(hits).size()));
-        getShipSet().forEach(ship -> dto.put(ship.getType(), ship.getHitsRecibidos()));
-        return dto;
-
-    }
-
 
     public Map<String, Object> getDamages(int turno) {
         HashMap<String, Object> dto = new LinkedHashMap<>();
-        List<String> hits = getHits(getEnemigo().getPosicionesSalvoPorTurno(turno));
-
+        List<String> hits = getHits(turno);
         getShipSet().forEach(ship -> dto.put(ship.getType() + "Hits", ship.getHits(hits).size()));
         getShipSet().forEach(ship -> dto.put(ship.getType(), ship.getHitsRecibidos().size()));
         return dto;
     }
 
-    public Map<String, Object> hitsPorTurno(int turno) {
-        HashMap<String, Object> dto = new LinkedHashMap<>();
-        List<String> hits = getHits(getEnemigo().getPosicionesSalvoPorTurno(turno));
-        dto.put("turn", turno);
-        dto.put("hitLocations", hits);
-        dto.put("damages", this.getDamages(turno));
-        dto.put("missed", 5 - hits.size());
-        return dto;
-    }
-
-
-
-    public List<Map<String, Object>> hitsTodosLosTurnos() {
+    public List<Map<String, Object>> dtoHitsAllTurns() {
         ArrayList<Map<String, Object>> hitsTotales = new ArrayList<>();
-        int i = 1;
-        while (i <= salvoSet.size()) {
-            hitsTotales.add(hitsPorTurno(i));
-            i++;
+        int turno = 1;
+        while (turno <= salvoSet.size()) {
+            HashMap<String, Object> dto = new LinkedHashMap<>();
+            List<String> hits = getHits(turno);
+            dto.put("turn", turno);
+            dto.put("hitLocations", hits);
+            dto.put("damages", this.getDamages(turno));
+            dto.put("missed", 5 - hits.size());
+            hitsTotales.add(dto);
+            turno++;
         }
         return hitsTotales;
     }
@@ -189,34 +160,30 @@ public class GamePlayer {
         this.salvoSet = salvoSet;
     }
 
-    public int contarBarcosCaidos(){
-        return  shipSet.stream().filter(ship -> ship.isSink()).collect(Collectors.toList()).size();
+    public int countAllSinkedShips() {
+        return shipSet.stream().filter(ship -> ship.isSink()).collect(Collectors.toList()).size();
     }
 
 
-    public String getEstado(){
-        if(getShipSet().isEmpty())
+    public String getState() {
+        if (getShipSet().isEmpty())
             return "PLACESHIPS";
-        if(game.getGamePlayers().size()!=2)
+        if (game.getGamePlayers().size() != 2)
             return "WAITINGFOROPP";
-        if(getEnemigo().getShipSet().isEmpty())
+        if (getOpponent().getShipSet().isEmpty())
             return "WAIT";
-        if(contarBarcosCaidos()==getEnemigo().contarBarcosCaidos()&& contarBarcosCaidos()==shipSet.size())
+        if (countAllSinkedShips() == getOpponent().countAllSinkedShips() && countAllSinkedShips() == shipSet.size())
             return "TIE";
-        if(getShipSet().stream().allMatch(ship -> ship.isSink()))
+        if (getShipSet().stream().allMatch(ship -> ship.isSink()))
             return "LOST";
-        if(getEnemigo().getShipSet().stream().allMatch(ship -> ship.isSink()))
+        if (getOpponent().getShipSet().stream().allMatch(ship -> ship.isSink()))
             return "WON";
-        if(getSalvoSet().size() <= getEnemigo().getSalvoSet().size())
+        if (getSalvoSet().size() <= getOpponent().getSalvoSet().size())
             return "PLAY";
-        if(getSalvoSet().size()> getEnemigo().getSalvoSet().size())
+        if (getSalvoSet().size() > getOpponent().getSalvoSet().size())
             return "WAIT";
         return "WAIT";
     }
-
-
-
-
 
 
 }

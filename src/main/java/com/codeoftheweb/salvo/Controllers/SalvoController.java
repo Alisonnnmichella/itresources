@@ -3,7 +3,6 @@ package com.codeoftheweb.salvo.Controllers;
 import com.codeoftheweb.salvo.Modelo.*;
 import com.codeoftheweb.salvo.Modelo.GamePlayer;
 import com.codeoftheweb.salvo.Repositories.*;
-import jdk.nashorn.internal.ir.RuntimeNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 
@@ -57,31 +55,31 @@ public class SalvoController {
     @RequestMapping("/game_view/{id}")
     public ResponseEntity<Map<String, Object>> getGameView(@PathVariable Long id, Authentication authentication) {
         if (isGuest(authentication))
-            return new ResponseEntity<>(hacerMap("error", "Usted no esta logueado."), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(makeMap("error", "You are not logged in."), HttpStatus.UNAUTHORIZED);
 
 
         Player player = playerRepository.findByUserName(authentication.getName());
         GamePlayer gamePlayer = gamePlayerRepository.findById(id).orElse(null);
 
         if (player == null)
-            return new ResponseEntity<>(hacerMap("error", "Usted no esta logueado."), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(makeMap("error", "You are no logged in"), HttpStatus.UNAUTHORIZED);
 
         if (gamePlayer == null)
-            return new ResponseEntity<>(hacerMap("error", "Problemas con el gamePlayer"), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(makeMap("error", "Problemas con el gamePlayer"), HttpStatus.UNAUTHORIZED);
 
         if (gamePlayer.getPlayer().getId() != player.getId())
-            return new ResponseEntity<>(hacerMap("error", "Problemas con el gamePlayer")
+            return new ResponseEntity<>(makeMap("error", "Problemas con el gamePlayer")
                     , HttpStatus.UNAUTHORIZED);
 
         Map<String, Object> hits = new LinkedHashMap<>();
-        hits.put("self", gamePlayer.hitsTodosLosTurnos());
-        hits.put("opponent", gamePlayer.getEnemigo().hitsTodosLosTurnos());
+        hits.put("self", gamePlayer.dtoHitsAllTurns());
+        hits.put("opponent", gamePlayer.getOpponent().dtoHitsAllTurns());
         Map<String, Object> dto = new HashMap<>();
         dto.put("id", gamePlayer.getGame().getId());
         dto.put("created", gamePlayer.getGame().getLocalDateTime());
-        dto.put("gameState", gamePlayer.getEstado());
-        actualizarScore(gamePlayer);
-        dto.put("gamePlayers", gamePlayer.getGame().getGamePlayers().stream().map(gamePlayer1 -> gamePlayer1.makeDTO()));
+        dto.put("gameState", gamePlayer.getState());
+        updateScore(gamePlayer);
+        dto.put("gamePlayers", gamePlayer.getGame().getGamePlayers().stream().map(gamePlayer1 -> gamePlayer1.idplayerdto()));
         dto.put("ships", gamePlayer.getShipSet().stream().map(ship -> ship.getDTO()).collect(Collectors.toList()));
         dto.put("salvoes", gamePlayer.getGame().getGamePlayers().stream().map(gamePlayer1 -> gamePlayer1.getSalvoSet()).flatMap(salvos -> salvos.stream())
                 .map(salvo -> salvo.getDto()).collect(Collectors.toList()));
@@ -96,17 +94,24 @@ public class SalvoController {
     public ResponseEntity<Map<String, Object>> register(
             @RequestParam String email, @RequestParam String password) {
 
-        if (email.isEmpty() || password.isEmpty()) {
-            return new ResponseEntity<>(hacerMap("error", "Paso algo"), HttpStatus.FORBIDDEN);
+        if (email.isEmpty() && password.isEmpty()) {
+            return new ResponseEntity<>(makeMap("error", ErrorMessages.MAILEMPTY.getMessage()+ErrorMessages.PASSWORDEMPTY.getMessage()), HttpStatus.FORBIDDEN);
+        }
+        if (password.isEmpty()) {
+            return new ResponseEntity<>(makeMap("error", ErrorMessages.PASSWORDEMPTY.getMessage()), HttpStatus.FORBIDDEN);
+        }
+
+        if (email.isEmpty()) {
+            return new ResponseEntity<>(makeMap("error", ErrorMessages.MAILEMPTY.getMessage()), HttpStatus.FORBIDDEN);
         }
 
         if (playerRepository.findByUserName(email) != null) {
-            return new ResponseEntity<>(hacerMap("error", "El mail ya esta siendo utlizado"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(makeMap("error", ErrorMessages.MAILINUSE.getMessage()), HttpStatus.FORBIDDEN);
         }
 
         Player player = playerRepository.save(new Player(email, passwordEncoder.encode(password)));
 
-        return new ResponseEntity<>(hacerMap("OK", "Todo bien"), HttpStatus.CREATED);
+        return new ResponseEntity<>(makeMap("OK", "Everything is fine"), HttpStatus.CREATED);
 
     }
 
@@ -118,14 +123,14 @@ public class SalvoController {
 
         if (isGuest(authentication))
             return new ResponseEntity<>(
-                    hacerMap("error", "Usted no esta logueado.")
+                    makeMap("error", ErrorMessages.NOTLOGGED.getMessage())
                     , HttpStatus.UNAUTHORIZED);
 
         Player player = playerRepository.findByUserName(authentication.getName());
 
         if (player == null)
             return new ResponseEntity<>(
-                    hacerMap("error", "No lo encontramos en la base de datos"),
+                    makeMap("error", ErrorMessages.PLAYERNULL.getMessage()),
                     HttpStatus.UNAUTHORIZED);
 
 
@@ -133,13 +138,13 @@ public class SalvoController {
 
         if (game == null)
             return new ResponseEntity<>(
-                    hacerMap("error", "No such game"), HttpStatus.FORBIDDEN);
+                    makeMap("error", ErrorMessages.GAMENULL.getMessage()), HttpStatus.FORBIDDEN);
         if (game.getGamePlayers().size() >= 2)
             return new ResponseEntity<>(
-                    hacerMap("error", "Game is full"), HttpStatus.FORBIDDEN);
+                    makeMap("error", ErrorMessages.OPPONENTNULL.getMessage()), HttpStatus.FORBIDDEN);
 
         GamePlayer gamePlayer = gamePlayerRepository.save(new GamePlayer(game, player, LocalDateTime.now()));
-        return new ResponseEntity<>(hacerMap("gpid", gamePlayer.getId()), HttpStatus.CREATED);
+        return new ResponseEntity<>(makeMap("gpid", gamePlayer.getId()), HttpStatus.CREATED);
 
     }
 
@@ -148,14 +153,15 @@ public class SalvoController {
         return authentication == null || authentication instanceof AnonymousAuthenticationToken;
     }
 
-    public Map<String, Object> hacerMap(String string, Object objeto) {
+    public Map<String, Object> makeMap(String string, Object objeto) {
         Map<String, Object> soyUnMapa = new LinkedHashMap<>();
         soyUnMapa.put(string, objeto);
         return soyUnMapa;
     }
 
-    public void actualizarScore(GamePlayer gamePlayer) {
-        Optional<ScoreValue> scoreValue = Arrays.stream(ScoreValue.values()).filter(scoreValue1 -> scoreValue1.toString().equalsIgnoreCase(gamePlayer.getEstado())).findFirst();
+    public void updateScore(GamePlayer gamePlayer) {
+        Optional<ScoreValue> scoreValue = Arrays.stream(ScoreValue.values())
+                .filter(scoreValue1 -> scoreValue1.toString().equalsIgnoreCase(gamePlayer.getState())).findFirst();
        if (scoreValue.isPresent()) {
            List<Score> scores = scoreRepository.findAll();
             Optional<Score> score = scores.stream().filter(score1 -> score1.getGame().getId() == gamePlayer.getGame().getId()
